@@ -20,6 +20,6 @@ export type CharacterAction =
 
 
 export interface CharacterContextType {
-  Characters: State | null;
+  AllCharacters: State ;
   dispatch: React.Dispatch<CharacterAction>;
 }

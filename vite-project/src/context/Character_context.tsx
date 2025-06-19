@@ -14,10 +14,10 @@ const initialState: State = {
 export const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
 
 export const CharacterProvider = ({ children }: { children: ReactNode }) => {
-  const [Characters, dispatch] = useReducer(CharacterReducer, initialState);
+  const [AllCharacters, dispatch] = useReducer(CharacterReducer, initialState);
 
   return (
-    <CharacterContext.Provider value={{ Characters, dispatch }}>
+    <CharacterContext.Provider value={{ AllCharacters, dispatch }}>
       {children}
     </CharacterContext.Provider>
   );

@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Home from "./pages/home"
 import Films from "./pages/Films"
-import Characters from "./pages/Characters"
-import Providers from "./components/Providers"
+import {Characters} from "./pages/Characters"
+import Providers from "./components/Providers/Providers"
 
 export default function App() {
   return (

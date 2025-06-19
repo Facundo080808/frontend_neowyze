@@ -1,115 +1,112 @@
-import { useEffect, useState, useRef, useCallback } from "react"
-import { Link } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { useCharacters } from "../hooks/useCharacters";
+import { fetchCharacters } from "../services/Character_service";
+import type { ICharacter } from "../utils/Character_type";
+import { Header } from "../components/Header/Header";
+import { Filters } from "../components/Filters/Filters";
+import { Pagination } from "../components/Pagination/Pagination";
+import { Link } from "react-router-dom";
 
-type Character = {
-  name: string
-  eye_color: string
-  gender: string
-  url: string
-}
+export function Characters() {
+  const { AllCharacters: state, dispatch } = useCharacters();
+  const [filteredCharacters, setFilteredCharacters] = useState<ICharacter[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrev, setHasPrev] = useState(false);
+  const charactersPerPage = 9;
 
-const genericImage = "/character.jpg"
 
-export default function Characters() {
-  const [characters, setCharacters] = useState<Character[]>([])
-  const [filtered, setFiltered] = useState<Character[]>([])
-  const [filters, setFilters] = useState({ eye_color: "", gender: "" })
-  const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(false)
-  const observer = useRef<IntersectionObserver | null>(null)
-  const loaderRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const getCharacters = async () => {
+      const allChars = await fetchCharacters();
+      dispatch({ type: "setCharacters", payload: allChars });
+    };
 
-  // Carga desde SWAPI
-  const fetchCharacters = async () => {
-    setLoading(true)
-    const res = await fetch(`https://swapi.dev/api/people/?page=${page}`)
-    const data = await res.json()
-    setCharacters(prev => [...prev, ...data.results])
-    setLoading(false)
+    getCharacters();
+  }, [dispatch]);
+
+useEffect(() => {
+  let result = state.all;
+
+  if (state.filters.eyeColor !== "all") {
+    result = result.filter(
+      (char) => char.eye_color.toLowerCase() === state.filters.eyeColor.toLowerCase()
+    );
   }
 
-  // Scroll infinito usando IntersectionObserver
-  const lastElement = useCallback((node: HTMLDivElement | null) => {
-    if (loading) return
-    if (observer.current) observer.current.disconnect()
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        setPage(prev => prev + 1)
-      }
-    })
-    if (node) observer.current.observe(node)
-  }, [loading])
+  if (state.filters.gender !== "all") {
+    result = result.filter(
+      (char) => char.gender.toLowerCase() === state.filters.gender.toLowerCase()
+    );
+  }
 
-  // Filtro en memoria
-  useEffect(() => {
-    const filteredData = characters.filter(c => {
-      const eyeMatch = filters.eye_color === "" || c.eye_color === filters.eye_color
-      const genderMatch = filters.gender === "" || c.gender === filters.gender
-      return eyeMatch && genderMatch
-    })
-    setFiltered(filteredData)
-  }, [filters, characters])
+  const totalPages = Math.ceil(result.length / charactersPerPage);
+  setHasPrev(page > 1);
+  setHasNext(page < totalPages);
 
-  useEffect(() => {
-    fetchCharacters()
-  }, [page])
+  const startIndex = (page - 1) * charactersPerPage;
+  const paginated = result.slice(startIndex, startIndex + charactersPerPage);
+
+  setFilteredCharacters(paginated);
+  console.log(filteredCharacters);
+  
+}, [state.all, state.filters, page]);
+
+useEffect(() => {
+  setPage(1); 
+}, [state.filters]);
+
 
   return (
-    <div className="p-6 min-h-screen bg-gray-900 text-white">
-      <h1 className="text-3xl font-bold mb-6">Personajes</h1>
+     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 bg-white dark:bg-gray-900 text-black dark:text-white min-h-screen p-4">
 
-      {/* Filtros */}
-      <div className="flex flex-wrap gap-4 mb-6">
-        <select
-          className="text-black p-2 rounded"
-          value={filters.eye_color}
-          onChange={e => setFilters(prev => ({ ...prev, eye_color: e.target.value }))}
-        >
-          <option value="">Todos los colores de ojos</option>
-          {[...new Set(characters.map(c => c.eye_color))]
-            .filter(c => c !== "unknown" && c !== "n/a")
-            .map(color => (
-              <option key={color} value={color}>{color}</option>
-            ))}
-        </select>
-
-        <select
-          className="text-black p-2 rounded"
-          value={filters.gender}
-          onChange={e => setFilters(prev => ({ ...prev, gender: e.target.value }))}
-        >
-          <option value="">Todos los géneros</option>
-          {[...new Set(characters.map(c => c.gender))]
-            .filter(g => g !== "unknown" && g !== "n/a")
-            .map(gender => (
-              <option key={gender} value={gender}>{gender}</option>
-            ))}
-        </select>
+      <Header />
+      <div className="flex flex-row items-center justify-between mb-6 col-span-full">
+        <h1 className="text-3xl font-bold mb-6 col-span-full">Personajes</h1>
+        <Filters />
       </div>
-
-      {/* Personajes */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filtered.map((char, idx) => {
-          const id = char.url.split("/").filter(Boolean).pop()
-          return (
-            <Link
-              to={`/characters/${id}`}
-              key={id! + idx}
-              className="bg-gray-800 p-3 rounded hover:bg-gray-700 text-center"
-            >
-              <img src={genericImage} alt={char.name} className="w-full h-32 object-cover mb-2 rounded" />
-              <h2 className="text-lg">{char.name}</h2>
-              <p className="text-sm">👁️ {char.eye_color}</p>
-              <p className="text-sm">⚥ {char.gender}</p>
-            </Link>
-          )
-        })}
-      </div>
-
-      {/* Loader final */}
-      <div ref={lastElement} className="h-20 flex justify-center items-center">
-        {loading && <p className="text-gray-400">Cargando más personajes...</p>}
+      
+      {filteredCharacters.length === 0 ? (
+        <p>No hay personajes que coincidan con los filtros.</p>
+      ) : (
+        filteredCharacters.map((char) => {
+          const id = char.url.split("/").filter(Boolean).pop();
+          return(
+          <Link key={id} 
+          to={`/characters/${id}`}
+          className=""
+          >
+          <div
+            key={char.url}
+            className=" border rounded-xl p-4 shadow-md bg-gray-100 dark:bg-gray-800 dark:border-gray-700"
+          >
+            <img
+              src="https://imgs.search.brave.com/bSMsgDaD07WHzIO5RbhBdIEU8gdr5wbA5gkQuDyWWzE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJzLmNvbS9p/bWFnZXMvaGQvc3Rh/ci13YXJzLWNoYXJh/Y3RlcnMtdXJib2tq/cHI0M3U3NGFmdi5q/cGc"
+              alt="Personaje"
+              className="w-full h-40 object-cover rounded mb-4"
+            />
+            <h3 className="text-lg font-bold mb-2">{char.name}</h3>
+            <p className="text-sm">
+              <span className="font-medium">👁 Color de ojos:</span> {char.eye_color}
+            </p>
+            <p className="text-sm">
+              <span className="font-medium">🚻 Género:</span> {char.gender ===  "n/a" ? "No especificado":char.gender}
+            </p>
+          </div>
+          </Link>
+        )})
+      )}
+      <div className="col-span-full flex justify-center mt-4">
+        <Pagination
+          page={page}
+          hasNext={hasNext}
+          hasPrev={hasPrev}
+          onNext={() => setPage((prev) => prev + 1)}
+          onPrev={() => setPage((prev) => prev - 1)}
+        />
       </div>
     </div>
-  )
-}
+  );
+};
+
+

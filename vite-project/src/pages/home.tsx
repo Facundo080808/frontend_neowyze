@@ -1,22 +1,15 @@
-import { useEffect } from "react"
-import { Link } from "react-router-dom"
-import { fetchFilms } from "../services/Film_service"
+import { useEffect } from "react";
+
+import { fetchFilmsAction } from "../services/Film_service";
+import { Header } from "../components/Header/Header";
 
 export default function Home() {
-  useEffect(()=>{
-    fetchFilms().then((data)=>console.log(data)).catch((e)=>console.error(e))
-  },[])
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-black text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white text-black dark:bg-black dark:text-white transition-colors duration-300 ">
+      <Header />
       <h1 className="text-4xl font-bold">Star Wars Explorer</h1>
-      <div className="flex gap-4">
-        <Link to="/films" className="bg-yellow-500 px-6 py-2 rounded text-black hover:bg-yellow-600">
-          Ver Películas
-        </Link>
-        <Link to="/characters" className="bg-blue-500 px-6 py-2 rounded text-white hover:bg-blue-600">
-          Ver Personajes
-        </Link>
-      </div>
+      <p className="text-lg">Explora el universo de Star Wars</p>
     </div>
-  )
+  );
 }

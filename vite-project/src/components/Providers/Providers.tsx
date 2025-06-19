@@ -1,6 +1,6 @@
 import type{ ReactNode } from 'react'
-import { FilmsProvider } from '../context/FilmsContext'
-import { CharacterProvider } from '../context/Character_context'
+import { FilmsProvider } from '../../context/FilmsContext'
+import { CharacterProvider } from '../../context/Character_context'
 
 
 type ProvidersProps = {
@@ -10,9 +10,9 @@ type ProvidersProps = {
 export default function Providers({ children }: ProvidersProps) {
   return (
     <CharacterProvider>
-    <FilmsProvider>
-        {children}
-    </FilmsProvider>
+      <FilmsProvider>
+          {children}
+      </FilmsProvider>
     </CharacterProvider>
   )
 }

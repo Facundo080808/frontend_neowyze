@@ -1,0 +1,17 @@
+nav {
+  animation: nav-shadow 1s linear both;
+  animation-timeline: scroll();
+  animation-range: 0 100px;
+}
+
+@keyframes nav-shadow {
+  0% {
+    background-color: rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}

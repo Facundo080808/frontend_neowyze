@@ -18,12 +18,3 @@ export async function fetchCharacters(): Promise<ICharacter[]> {
   return characters;
 }
 
-export async function FilterByEyeColor(color: string): Promise<ICharacter[]> {
-  const characters = await fetchCharacters();
-  return characters.filter((char) => char.eye_color === color);
-}
-
-export async function FilterByGender(gender: string): Promise<ICharacter[]> {
-  const characters = await fetchCharacters();
-  return characters.filter((char) => char.gender === gender);
-}

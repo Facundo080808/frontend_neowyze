@@ -1,6 +1,6 @@
 import { type IFilm } from "../utils/Film_types";
 
-export async function fetchFilms(): Promise<IFilm[]> {
+export async function fetchFilmsAction(): Promise<IFilm[]> {
   const response = await fetch("https://swapi.info/api/films");
   if (!response.ok) {
     throw new Error("Error al obtener peliculas");
@@ -14,5 +14,5 @@ export async function fetchFilms(): Promise<IFilm[]> {
     url: film.url,
   }));
 
-  return Films;
+  return Films.sort((a: IFilm, b: IFilm) => a.episode_id - b.episode_id);
 }

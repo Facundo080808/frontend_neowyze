@@ -18,7 +18,7 @@ Antes de comenzar, asegúrate de tener instalado:
 Clona el repositorio e instala las dependencias usando **Bun**:
 
 ```bash
-git clone [https://github.com/tu-usuario/star-wars-explorer.git](https://github.com/Facundo080808/frontend_neowyze)
+git clone (https://github.com/Facundo080808/frontend_neowyze)
 cd vite-project
 bun install
 bun run dev

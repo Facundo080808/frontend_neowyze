@@ -9,9 +9,14 @@ export async function fetchFilmsAction(): Promise<IFilm[]> {
   const data = await response.json();
 
   const Films: IFilm[] = data.map((film: any) => ({
-    episode_id: film.episode_id,
     title: film.title,
+    episode_id: film.episode_id,
+    opening_crawl: film.opening_crawl,
+    director: film.director,
+    producer: film.producer,
+    release_date: film.release_date,
     url: film.url,
+    characters: film.characters,
   }));
 
   return Films.sort((a: IFilm, b: IFilm) => a.episode_id - b.episode_id);

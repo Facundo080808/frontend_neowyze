@@ -13,6 +13,11 @@ export async function fetchCharacters(): Promise<ICharacter[]> {
     eye_color: char.eye_color,
     gender: char.gender,
     url: char.url,
+    birth_year: char.birth_year,
+    hair_color: char.hair_color,
+    height: char.height,
+    skin_color: char.skin_color,
+    mass: char.mass,
   }));
 
   return characters;

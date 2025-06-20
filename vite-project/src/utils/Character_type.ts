@@ -1,9 +1,15 @@
 export interface ICharacter {
-  name: string
-  eye_color: string
-  gender: string
-  url: string
+  name: string;
+  eye_color: string;
+  gender: string;
+  url: string;
+  birth_year?: string;
+  hair_color?: string;
+  height?: string;
+  skin_color?: string;
+  mass?: string;
 }
+
 
 export type State = {
   all: ICharacter[];
